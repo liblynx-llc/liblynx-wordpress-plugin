@@ -56,14 +56,14 @@ class Client
     */
     public function getToken()
     {
-        $token=get_transient(TRANSIENT_TOKEN, null);
+        $token=get_transient(self::TRANSIENT_TOKEN, null);
         if (!empty($token)) {
             return $token;
         }
 
         $oauth=$this->newToken();
         if ($oauth) {
-            set_transient(TRANSIENT_TOKEN, $oauth->access_token, $oauth->expires_in-60);
+            set_transient(self::TRANSIENT_TOKEN, $oauth->access_token, $oauth->expires_in-60);
             $token=$oauth->access_token;
         }
 
@@ -111,9 +111,16 @@ class Client
             $params['headers']['Content-Type']='application/json';
         }
 
-
-
         $response = wp_remote_post($url, $params);
+        if (is_wp_error($response)) {
+            $msg=sprintf('request for %s with args %s failed: errors=%s',
+                $url,
+                print_r($params, true),
+                print_r($response->get_error_messages(), true)
+            );
+            error_log($msg);
+            return null;
+        }
 
         if (isset($response['response']['code']) &&
             ($response['response']['code']>=200) &&
@@ -143,7 +150,7 @@ class Client
 
     public function getEntryPoint()
     {
-        $json=get_transient(TRANSIENT_ENTRYPOINT);
+        $json=get_transient(self::TRANSIENT_ENTRYPOINT);
         if (!empty($json)) {
             return json_decode($json);
         }
@@ -151,7 +158,7 @@ class Client
         $url=$this->apiroot.'/api';
         $entrypoint=$this->apiGET($url);
         if ($entrypoint) {
-            set_transient(TRANSIENT_ENTRYPOINT, json_encode($entrypoint), 86400);
+            set_transient(self::TRANSIENT_ENTRYPOINT, json_encode($entrypoint), 86400);
         }
 
         return $entrypoint;
