@@ -8,7 +8,7 @@ Plugin Name: LibLynx Connect
 Plugin URI: http://www.liblynx.com/
 Description: Allows access control to content to be managed with LibLynx Connect, making it easy to provide authenticated access via IP address, library card, Shibboleth, and other mechanisms.
 Author: LibLynx LLC
-Version: 1.1
+Version: 1.1.2
 Author URI: http://www.liblynx.com/
 */
 
@@ -21,6 +21,35 @@ require_once(dirname(__FILE__).'/settings.php');
 require_once(dirname(__FILE__).'/metabox.php');
 
 function liblynx_start_session(){
+
+    /**
+     * Register our special metadata elements so they can be administered via API
+     */
+    register_meta(
+        'post',
+        '_liblynx_unit',
+        array(
+            'show_in_rest' => true,
+            'single' => true,
+            'type' => 'string',
+            'auth_callback' => function() {
+                return current_user_can( 'edit_posts' );
+            }
+        )
+    );
+    register_meta(
+        'post',
+        '_liblynx_protect',
+        array(
+            'show_in_rest' => true,
+            'single' => true,
+            'type' => 'string',
+            'auth_callback' => function() {
+                return current_user_can( 'edit_posts' );
+            }
+        )
+    );
+
     if( !session_id() )
         session_start();
 }

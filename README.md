@@ -61,3 +61,14 @@ above is an example of a page which has been explicitly flagged as requiring
 authentication, and the user would need a subscription to the `HRLC` content unit to
 view it.
 
+## Administering access controls via Wordpress REST API
+
+* The checkbox to turn controls on or off on a post or page is controled by a metadata value named `_liblynx_protect`
+* The unit code is controlled by a metadata value named `_liblynx_unit`
+
+Here's an example which would check the box and set a unit code of `FOO` on page id `123`
+```
+curl -X POST --user $USER:$PASS "http://example.com/wp-json/wp/v2/pages/123" \
+    -H 'content-type: application/json' \
+    -d '{"meta":{"_liblynx_unit":"FOO","_liblynx_protect":true}}'
+```

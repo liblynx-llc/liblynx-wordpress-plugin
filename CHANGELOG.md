@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.1.2 12-Jun-2020
+
+- Plug registers `_liblynx_unit` and `_liblynx_protect` metadata fields so they can be edited via REST API
+
+
 ## v1.1.1 21-May-2020
 
 - API client logs failures to error_log
